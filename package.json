@@ -1,0 +1,19 @@
+{
+  "name": "newman-trigger",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1",
+    "morgan": "~1.9.1",
+    "newman": "^5.3.2",
+    "node-fetch": "^2.0.0",
+    "postman-collection": "^4.1.6",
+    "telegraf": "^4.11.2"
+  }
+}
