@@ -12,7 +12,7 @@ const getAllCollections = async (apiKey, filter) => {
         const json = await response.json();
         if (filter) {
             return json.collections
-                .filter(value => value.name === filter)
+                .filter(value => filter.some(x => value.name === x || value.id === x))
                 .map((value, index) => value.id);
         }
         return json.collections.map((value, index) => value.id);
