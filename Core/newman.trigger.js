@@ -1,19 +1,22 @@
 const newman = require('../Core/newman.api')
 const postmanApi = require('../Core/postman.api')
 const sendMessage = require('../Core/telegram.api')
+const findOrCreateBug = require('../Core/target.process')
 
 const MESSAGE_LENGTH = 4096;
+const tpUrl = process.env.TP_URL;
 
 const executeCollection = async (postmanKey, data) => {
     const collections = await postmanApi.getAllCollections(postmanKey, data.collections);
     console.log(collections);
     for (const collectionId of collections) {
-        await newman(`https://api.getpostman.com/collections/${collectionId}?apikey=${postmanKey}`, (error, summary) => {
+        await newman(`https://api.getpostman.com/collections/${collectionId}?apikey=${postmanKey}`,async (error, summary) => {
             if(summary) {
                 const name = summary.collection.name;
                 const totalTests = summary.run.stats.assertions.total;
                 const failTests = summary.run.stats.assertions.failed;
                 const fails = summary.run.failures.map(x => `${x.source.name}: ${x.error.message}`);
+                const failsStr = failTests ? fails.map(x => `- ${x}`).join('\n') : 0;
 
                 const emojies = failTests
                     ? '❌❌❌'
@@ -25,14 +28,22 @@ const executeCollection = async (postmanKey, data) => {
 
                 let parameters = '';
 
+                
+                const bugId = failsStr ? await findOrCreateBug(name, failsStr) : 0;
+                
                 if(failTests) {
-                    message += `***\n${fails.map(x => `- ${x}`).join('\n')}`
+                    message += `***\n${failsStr}`
                 }
 
                 if(data.params) {
                     parameters += '\n***'
                     for (const key of Object.keys(data.params)) {
                         parameters += `\n${key}: ${data.params[key]}`
+                    }
+                    
+                    if(bugId) {
+                        const url = `${tpUrl}/entity/${bugId}`;
+                        parameters += `\n${url}`;
                     }
                 }
 
