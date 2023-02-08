@@ -1,5 +1,5 @@
-const tpApi = require('target.process.api')
-const settings = require('settings')
+const tpApi = require('../Core/target.process.api')
+const settings = require('../Core/settings.js')
 
 const findOrCreateBug = async (collectionName, errorDescription) => {
     const userStory = settings.read().userStory;
@@ -13,5 +13,5 @@ const findOrCreateBug = async (collectionName, errorDescription) => {
         return newBug.Id;
     }
 }
+module.exports = findOrCreateBug;
 
-export default findOrCreateBug;

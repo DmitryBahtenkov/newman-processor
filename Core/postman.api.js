@@ -17,7 +17,7 @@ const getAllCollections = async (apiKey, filter) => {
         }
         return json.collections.map((value, index) => value.id);
     } else {
-        throw {message: 'postman error', data: response};
+        throw {message: 'postman error', data: await response.json()};
     }
 }
 

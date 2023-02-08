@@ -68,5 +68,5 @@ const addCommentToBug = async (id, comment) => {
     }
 }
 
-export default {findBug, createBug, addCommentToBug};
+module.exports = {findBug, createBug, addCommentToBug};
 
