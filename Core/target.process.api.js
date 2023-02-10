@@ -18,6 +18,7 @@ const findBug = async (userStory, name) => {
     
     const json = await response.json()
     if (json.Items) {
+        console.log(`find bug by collection ${name}`)
         return json.Items[0]
     }
     
@@ -34,20 +35,22 @@ const createBug = async (name, description, userStory) => {
       Project: {Id: projectId}
   };
 
-  const url = `${tpUrl}/api/v1/Bugs?access_token=${accessToken}`;
+  const url = `${tpUrl}/api/v1/Bugs?access_token=${accessToken}&resultFormat=json`;
   const response = await fetch(url, {
       method: 'POST',
-      body: data
+      body: JSON.stringify(data),
+      headers: {'Content-Type': 'application/json'}
   });
   
   if(response.status === 201) {
       return await response.json();
   } else {
-      throw {message: await response.json()};
+      throw {message: await response.text()};
   }
 }
 
 const addCommentToBug = async (id, comment) => {
+    console.log('try add comment')
     const data = {
         General: {
             Id: id
@@ -55,16 +58,17 @@ const addCommentToBug = async (id, comment) => {
         Description: comment
     };
 
-    const url = `${tpUrl}/api/v1/Comments?access_token=${accessToken}`;
+    const url = `${tpUrl}/api/v1/Comments?access_token=${accessToken}&resultFormat=json`;
     const response = await fetch(url, {
         method: 'POST',
-        body: data
+        body: JSON.stringify(data),
+        headers: {'Content-Type': 'application/json'}
     });
 
     if(response.status === 201) {
         return await response.json();
     } else {
-        throw {message: await response.json()};
+        throw {message: await response.text()};
     }
 }
 

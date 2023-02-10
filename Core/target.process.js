@@ -5,11 +5,11 @@ const findOrCreateBug = async (collectionName, errorDescription) => {
     const userStory = settings.read().userStory;
     let bug = await tpApi.findBug(userStory, collectionName)
     if (bug) {
-        await tpApi.addCommentToBug(bug, `<div>${new Date()}</div>, <div>${errorDescription}</div>`)
+        await tpApi.addCommentToBug(bug.Id, `<div>${new Date()}</div>, <div>${errorDescription}</div>`)
         return bug.Id;
     } else {
         const newBug = await tpApi.createBug(collectionName, errorDescription, userStory);
-        
+        console.log(`create bug ${newBug}`);
         return newBug.Id;
     }
 }

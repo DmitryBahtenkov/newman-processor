@@ -28,9 +28,13 @@ const executeCollection = async (postmanKey, data) => {
 
                 let parameters = '';
 
-                
-                const bugId = failsStr ? await findOrCreateBug(name, failsStr) : 0;
-                
+                let bugId;
+                try {
+                    bugId = failsStr ? await findOrCreateBug(name, failsStr) : 0;
+                }catch (e) {
+                    console.error(e)
+                }
+
                 if(failTests) {
                     message += `***\n${failsStr}`
                 }
@@ -40,11 +44,11 @@ const executeCollection = async (postmanKey, data) => {
                     for (const key of Object.keys(data.params)) {
                         parameters += `\n${key}: ${data.params[key]}`
                     }
-                    
-                    if(bugId) {
-                        const url = `${tpUrl}/entity/${bugId}`;
-                        parameters += `\n${url}`;
-                    }
+                }
+
+                if(bugId) {
+                    const url = `${tpUrl}/entity/${bugId}`;
+                    parameters += `\n${url}`;
                 }
 
                 if(message.length >= MESSAGE_LENGTH) {
