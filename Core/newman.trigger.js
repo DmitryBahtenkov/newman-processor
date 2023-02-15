@@ -51,8 +51,10 @@ const executeCollection = async (postmanKey, data) => {
                     parameters += `\n${url}`;
                 }
 
-                if(message.length >= MESSAGE_LENGTH) {
+                if(message.length + parameters.length >= MESSAGE_LENGTH) {
                     message = message.substring(0, MESSAGE_LENGTH - parameters.length) + parameters;
+                } else {
+                    message += parameters;
                 }
 
                 sendMessage(message)
