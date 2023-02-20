@@ -7,13 +7,15 @@ const format = 'format=json'
 const tag = 'OpenAPI:computer:'
 const teamId = '4'
 const projectId = '220753'
+const headers = {'Content-Type': 'application/json', 'Authorization': `Basic ${accessToken}`}
 
 const findBug = async (userStory, name) => {
     const accessTokenPart = `access_token=${accessToken}`;
     const parts = [accessTokenPart, `where=(name contains '${name}')`, format]
     const url = `${tpUrl}/api/v1/UserStories/${userStory}/bugs?${parts.join('&')}`;
     const response = await fetch(url, {
-        method: 'GET'
+        method: 'GET',
+        headers: headers
     });
     
     const json = await response.json()
@@ -39,7 +41,7 @@ const createBug = async (name, description, userStory) => {
   const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: {'Content-Type': 'application/json'}
+      headers: headers
   });
   
   if(response.status === 201) {
@@ -62,7 +64,7 @@ const addCommentToBug = async (id, comment) => {
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(data),
-        headers: {'Content-Type': 'application/json'}
+        headers: headers
     });
 
     if(response.status === 201) {
