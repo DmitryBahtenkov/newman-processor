@@ -13,11 +13,11 @@ const getAllCollections = async (apiKey, filter) => {
         if (filter) {
             return json.collections
                 .filter(value => filter.some(x => value.name === x || value.id === x))
-                .map((value, index) => value.id);
+                .map((value, _) => value.id);
         }
-        return json.collections.map((value, index) => value.id);
+        return json.collections.map((value, _) => value.id);
     } else {
-        throw {message: 'postman error', data: response};
+        throw {message: 'postman error', data: await response.json()};
     }
 }
 
