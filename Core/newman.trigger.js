@@ -6,6 +6,32 @@ const findOrCreateBug = require('../Core/target.process')
 const MESSAGE_LENGTH = 4096;
 const tpUrl = process.env.TP_URL;
 
+const groupBy = (array, key) => {
+    return array.reduce((result, currentValue) => {
+        // get the nested propert value
+        const objKey = nestedObjectByString(currentValue, key);
+        result[objKey] = (result[objKey] || []).concat(
+            currentValue)
+        return result;
+    }, {});
+};
+
+// return value of nested property of an object
+const nestedObjectByString = (obj, key) => {
+    key = key.replace(/\[(\w+)\]/g, '.$1');  // convert indexes to properties
+    key = key.replace(/^\./, ''); // strip a leading dot
+    const a = key.split('.');
+    for (let i = 0, n = a.length; i < n; ++i) {
+        const k = a[i];
+        if (k in obj) {
+            obj = obj[k];
+        } else {
+            return;
+        }
+    }
+    return obj;
+}
+
 const executeCollection = async (postmanKey, data) => {
     const collections = await postmanApi.getAllCollections(postmanKey, data.collections);
     console.log(collections);
@@ -15,8 +41,18 @@ const executeCollection = async (postmanKey, data) => {
                 const name = summary.collection.name;
                 const totalTests = summary.run.stats.assertions.total;
                 const failTests = summary.run.stats.assertions.failed;
-                const fails = summary.run.failures.map(x => `${x.source.name}: ${x.error.message}`);
-                const failsStr = failTests ? fails.map(x => `- ${x}`).join('\n') : 0;
+
+                const groupByRequest = groupBy(summary.run.failures, "source.name");
+
+                const fails = [];
+                for (const key in groupByRequest) {
+                    fails.push(`${key}:`);
+                    const errors = groupByRequest[key].map(x => `- ${x.error.test}: ${x.error.message}`);
+                    fails.push(errors.join('\n'))
+                    fails.push('___')
+                }
+
+                const failsStr = failTests ? fails.join('\n') : 0;
 
                 const emojies = failTests
                     ? '❌❌❌'
@@ -48,7 +84,7 @@ const executeCollection = async (postmanKey, data) => {
 
                 if(bugId) {
                     const url = `${tpUrl}/entity/${bugId}`;
-                    parameters += `\n${url}`;
+                    parameters += `\nСоздан баг - ${url}`;
                 }
 
                 if(message.length + parameters.length >= MESSAGE_LENGTH) {
